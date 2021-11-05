@@ -17,18 +17,17 @@
 
 package org.apache.ignite.ml.inference.json;
 
-import java.io.File;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /** */
 public class JacksonHelper {
     /** */
-    public static void readAndValidateBasicJsonModelProperties(Path path, ObjectMapper mapper, String className) throws IOException {
-        Map jsonAsMap = mapper.readValue(new File(path.toAbsolutePath().toString()), LinkedHashMap.class);
+    public static void readAndValidateBasicJsonModelProperties(String serializedModel, ObjectMapper mapper, String className) throws IOException {
+        Map jsonAsMap = mapper.readValue(serializedModel, LinkedHashMap.class);
         String formatVersion = jsonAsMap.get("formatVersion").toString();
         Long timestamp = (Long) jsonAsMap.get("timestamp");
         String uid = jsonAsMap.get("uid").toString();

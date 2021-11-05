@@ -17,12 +17,6 @@
 
 package org.apache.ignite.ml.naivebayes.gaussian;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +30,13 @@ import org.apache.ignite.ml.inference.json.JSONWritable;
 import org.apache.ignite.ml.inference.json.JacksonHelper;
 import org.apache.ignite.ml.math.primitives.vector.Vector;
 import org.apache.ignite.ml.naivebayes.BayesModel;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Simple naive Bayes model which predicts result value {@code y} belongs to a class {@code C_k, k in [0..K]} as {@code
@@ -171,14 +172,14 @@ public class GaussianNaiveBayesModel implements BayesModel<GaussianNaiveBayesMod
     }
 
     /** Loads GaussianNaiveBayesModel from JSON file. */
-    public static GaussianNaiveBayesModel fromJSON(Path path) {
+    public static GaussianNaiveBayesModel fromJSON(String serializedModel) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         GaussianNaiveBayesModel mdl;
         try {
-            JacksonHelper.readAndValidateBasicJsonModelProperties(path, mapper, GaussianNaiveBayesModel.class.getSimpleName());
-            mdl = mapper.readValue(new File(path.toAbsolutePath().toString()), GaussianNaiveBayesModel.class);
+            JacksonHelper.readAndValidateBasicJsonModelProperties(serializedModel, mapper, GaussianNaiveBayesModel.class.getSimpleName());
+            mdl = mapper.readValue(serializedModel, GaussianNaiveBayesModel.class);
             return mdl;
         } catch (IOException e) {
             e.printStackTrace();

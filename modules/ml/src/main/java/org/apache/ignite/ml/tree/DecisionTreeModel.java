@@ -17,10 +17,7 @@
 
 package org.apache.ignite.ml.tree;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.UUID;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -28,14 +25,16 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.ignite.ml.IgniteModel;
 import org.apache.ignite.ml.inference.json.JSONModel;
 import org.apache.ignite.ml.inference.json.JSONModelMixIn;
-import org.apache.ignite.ml.inference.json.JSONWritable;
 import org.apache.ignite.ml.inference.json.JacksonHelper;
 import org.apache.ignite.ml.math.primitives.vector.Vector;
+
+import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Base class for decision tree models.
  */
-public class DecisionTreeModel implements IgniteModel<Vector, Double>, JSONWritable {
+public class DecisionTreeModel implements IgniteModel<Vector, Double> {
     /** Root node. */
     private DecisionTreeNode rootNode;
 
@@ -74,7 +73,7 @@ public class DecisionTreeModel implements IgniteModel<Vector, Double>, JSONWrita
     }
 
     /** {@inheritDoc} */
-    @Override public void toJSON(Path path) {
+    public String toJSON() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.addMixIn(DecisionTreeModel.class, JSONModelMixIn.class);
 
@@ -85,23 +84,18 @@ public class DecisionTreeModel implements IgniteModel<Vector, Double>, JSONWrita
             .withAttribute("uid", "dt_" + UUID.randomUUID().toString())
             .withAttribute("modelClass", DecisionTreeModel.class.getSimpleName());
 
-        try {
-            File file = new File(path.toAbsolutePath().toString());
-            writer.writeValue(file, this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return writer.writeValueAsString(this);
     }
 
     /** Loads DecisionTreeModel from JSON file. */
-    public static DecisionTreeModel fromJSON(Path path) {
+    public static DecisionTreeModel fromJSON(String serializedModel) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         DecisionTreeModel mdl;
         try {
-            JacksonHelper.readAndValidateBasicJsonModelProperties(path, mapper, DecisionTreeModel.class.getSimpleName());
-            mdl = mapper.readValue(new File(path.toAbsolutePath().toString()), DecisionTreeModel.class);
+            JacksonHelper.readAndValidateBasicJsonModelProperties(serializedModel, mapper, DecisionTreeModel.class.getSimpleName());
+            mdl = mapper.readValue(serializedModel, DecisionTreeModel.class);
             return mdl;
         } catch (IOException e) {
             e.printStackTrace();

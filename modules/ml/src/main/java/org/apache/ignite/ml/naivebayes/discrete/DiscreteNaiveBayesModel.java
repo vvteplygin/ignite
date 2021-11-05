@@ -189,14 +189,14 @@ public class DiscreteNaiveBayesModel implements BayesModel<DiscreteNaiveBayesMod
     }
 
     /** Loads DiscreteNaiveBayesModel from JSON file. */
-    public static DiscreteNaiveBayesModel fromJSON(Path path) {
+    public static DiscreteNaiveBayesModel fromJSON(String serializedModel) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         DiscreteNaiveBayesModel mdl;
         try {
-            JacksonHelper.readAndValidateBasicJsonModelProperties(path, mapper, DiscreteNaiveBayesModel.class.getSimpleName());
-            mdl = mapper.readValue(new File(path.toAbsolutePath().toString()), DiscreteNaiveBayesModel.class);
+            JacksonHelper.readAndValidateBasicJsonModelProperties(serializedModel, mapper, DiscreteNaiveBayesModel.class.getSimpleName());
+            mdl = mapper.readValue(serializedModel, DiscreteNaiveBayesModel.class);
             return mdl;
         } catch (IOException e) {
             e.printStackTrace();

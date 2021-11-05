@@ -89,14 +89,14 @@ public class RandomForestModel extends ModelsComposition<RandomForestTreeModel> 
     }
 
     /** Loads RandomForestModel from JSON file. */
-    public static RandomForestModel fromJSON(Path path) {
+    public static RandomForestModel fromJSON(String serializedModel) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         RandomForestModel mdl;
         try {
-            JacksonHelper.readAndValidateBasicJsonModelProperties(path, mapper, RandomForestModel.class.getSimpleName());
-            mdl = mapper.readValue(new File(path.toAbsolutePath().toString()), RandomForestModel.class);
+            JacksonHelper.readAndValidateBasicJsonModelProperties(serializedModel, mapper, RandomForestModel.class.getSimpleName());
+            mdl = mapper.readValue(serializedModel, RandomForestModel.class);
             return mdl;
         } catch (IOException e) {
             e.printStackTrace();

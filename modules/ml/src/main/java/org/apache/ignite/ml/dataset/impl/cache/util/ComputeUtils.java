@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.locks.LockSupport;
 import java.util.stream.Stream;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
@@ -123,16 +122,17 @@ public final class ComputeUtils {
                     results.add(res);
                     completionFlags.set(entry.getKey());
                 }
-                catch (IgniteException ignore) {
+                catch (IgniteException igniteException) {
+                    igniteException.printStackTrace();
                 }
 
             if (completionFlags.cardinality() == partitions)
                 return results;
 
-            LockSupport.parkNanos(interval * 1_000_000);
+
         }
 
-        throw new IllegalStateException();
+        throw new RuntimeException("Not all partition tasks completed");
     }
 
     /**

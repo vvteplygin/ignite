@@ -103,14 +103,14 @@ public final class GDBModel extends ModelsComposition<DecisionTreeModel> impleme
     }
 
     /** Loads RandomForestModel from JSON file. */
-    public static GDBModel fromJSON(Path path) {
+    public static GDBModel fromJSON(String serializedModel) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         GDBModel mdl;
         try {
-            JacksonHelper.readAndValidateBasicJsonModelProperties(path, mapper, GDBModel.class.getSimpleName());
-            mdl = mapper.readValue(new File(path.toAbsolutePath().toString()), GDBModel.class);
+            JacksonHelper.readAndValidateBasicJsonModelProperties(serializedModel, mapper, GDBModel.class.getSimpleName());
+            mdl = mapper.readValue(serializedModel, GDBModel.class);
             return mdl;
         } catch (IOException e) {
             e.printStackTrace();

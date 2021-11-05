@@ -219,14 +219,14 @@ public class CompoundNaiveBayesModel implements IgniteModel<Vector, Double>, Exp
     }
 
     /** Loads CompoundNaiveBayesModel from JSON file. */
-    public static CompoundNaiveBayesModel fromJSON(Path path) {
+    public static CompoundNaiveBayesModel fromJSON(String serializedModel) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         CompoundNaiveBayesModel mdl;
         try {
-            JacksonHelper.readAndValidateBasicJsonModelProperties(path, mapper, CompoundNaiveBayesModel.class.getSimpleName());
-            mdl = mapper.readValue(new File(path.toAbsolutePath().toString()), CompoundNaiveBayesModel.class);
+            JacksonHelper.readAndValidateBasicJsonModelProperties(serializedModel, mapper, CompoundNaiveBayesModel.class.getSimpleName());
+            mdl = mapper.readValue(serializedModel, CompoundNaiveBayesModel.class);
             return mdl;
         } catch (IOException e) {
             e.printStackTrace();
